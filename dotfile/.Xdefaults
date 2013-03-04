@@ -1,0 +1,17 @@
+!xterm font and locale
+xterm.locale:true
+xterm.utf8: true
+xterm*utf8Title:true
+xterm*fontMenu*fontdefault*Label:Default
+XTerm.vt100.faceName: DejaVu Sans Mono:antialias=True:pixelsize=14
+XTerm.vt100.faceNameDoublesize:WenQuanYi Bitmap Song:antialias=True:pixelsize=14
+xterm*xftAntialias:true
+xterm*cjkWidth:false
+xterm*background:black
+xterm*foreground:gray
+!
+!!解决Alt键不好使
+xterm*eightBitInput:false
+xterm*altSendsEscape:true
+xterm*metaSendsEscape:true
+
