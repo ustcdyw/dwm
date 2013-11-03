@@ -14,9 +14,13 @@ X11LIB = /usr/X11R6/lib
 XINERAMALIBS = -L${X11LIB} -lXinerama
 XINERAMAFLAGS = -DXINERAMA
 
+# Xft, comment if you don't want it
+XFTINC = $(shell pkg-config --cflags xft)
+XFTLIBS = $(shell pkg-config --libs xft)
+
 # includes and libs
-INCS = -I. -I/usr/include -I${X11INC}
-LIBS = -L/usr/lib -lc -L${X11LIB} -lX11 ${XINERAMALIBS} -lXft
+INCS = -I. -I${X11INC} ${XFTINC}
+LIBS = -lc -L${X11LIB} -lX11 ${XINERAMALIBS} -lXft ${XFTLIBS}
 
 # flags
 CPPFLAGS = -DVERSION=\"${VERSION}\" ${XINERAMAFLAGS}
