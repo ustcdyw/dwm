@@ -1,5 +1,5 @@
 *~
-dwm
+dwm/dwm
 *.o
-dmenu
-dmenu_path
+dmenu/dmenu
+dmenu/dmenu_path
