@@ -23,10 +23,15 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            True,        -1 },
 	{ "MPlayer",  NULL,       NULL,       0,            True,        -1 },
+	{ "qemu",     NULL,       NULL,       0,            True,        -1 },
+	{ "Thunar",   NULL,       "File Operation ", 0,     True,        -1 },
+	{ "Wicd-client", NULL,    NULL,       0,            True,        -1 },
+	{ "StarDict", NULL,       NULL,       0,            True,        -1 },
+	{ NULL,       "iptux",    NULL,       0,            True,        -1 },
 };
 
 /* layout(s) */
-static const float mfact      = 0.5; /* factor of master area size [0.05..0.95] */
+static const float mfact      = 0.65; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const Bool resizehints = True; /* True means respect size hints in tiled resizals */
 
