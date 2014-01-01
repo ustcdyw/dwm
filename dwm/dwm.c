@@ -2406,6 +2406,9 @@ zoom(const Arg *arg) {
 
 int
 main(int argc, char *argv[]) {
+	Window root;
+	Atom netwmcheck, netwmname, utf8_string;
+
 	if(argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION", © 2006-2011 dwm engineers, see LICENSE for details\n");
 	else if(argc != 1)
@@ -2416,6 +2419,16 @@ main(int argc, char *argv[]) {
 		die("dwm: cannot open display\n");
 	checkotherwm();
 	setup();
+
+	root = DefaultRootWindow(dpy);
+	netwmcheck = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
+	netwmname = XInternAtom(dpy, "_NET_WM_NAME", False);
+	utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
+	XChangeProperty(dpy, root, netwmcheck, XA_WINDOW, 32, PropModeReplace, (unsigned char *)&root, 1);
+	XChangeProperty(dpy, root, netwmname, utf8_string, 8, PropModeReplace, (unsigned char *)"LG3D", 4);
+	XSync(dpy, False);
+
+
 	scan();
 	run();
 	cleanup();

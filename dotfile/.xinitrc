@@ -11,5 +11,4 @@ fcitx &
 #    sleep 1
 #  done
 #done
-wmname LG3D
 exec ck-launch-session dbus-launch dwm
