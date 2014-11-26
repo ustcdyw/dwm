@@ -58,6 +58,9 @@ static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, 
 static const char *termcmd[]  = { "xterm", NULL };
 static const char *eccmd[] = { "emacsclient", "-c", "-a", "", NULL};
 static const char *fmcmd[] = { "thunar", NULL };
+static const char *volumedown[] = { "amixer", "set", "Master", "5%-", NULL };
+static const char *volumeup[]   = { "amixer", "set", "Master", "5%+", NULL };
+static const char *mute[]       = { "amixer", "set", "Master", "toggle", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -93,6 +96,9 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{0,          XF86XK_AudioLowerVolume,      spawn,          {.v = volumedown } },
+	{0,          XF86XK_AudioRaiseVolume,      spawn,          {.v = volumeup } },
+	{0,                 XF86XK_AudioMute,      spawn,          {.v = mute } },
 };
 
 /* button definitions */
