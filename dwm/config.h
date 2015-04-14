@@ -56,7 +56,7 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "xterm", NULL };
-static const char *eccmd[] = { "emacsclient", "-c", "-a", "", NULL};
+static const char *eccmd[] = { "emacsclient", "-n", "-c", "-a", "", NULL};
 static const char *fmcmd[] = { "thunar", NULL };
 static const char *volumedown[] = { "amixer", "set", "Master", "5%-", NULL };
 static const char *volumeup[]   = { "amixer", "set", "Master", "5%+", NULL };
