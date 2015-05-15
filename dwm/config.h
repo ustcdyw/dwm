@@ -27,6 +27,10 @@ static const Rule rules[] = {
 	{ "Thunar",   NULL,       "File Operation ", 0,     True,        -1 },
 	{ "Wicd-client", NULL,    NULL,       0,            True,        -1 },
 	{ "StarDict", NULL,       NULL,       0,            True,        -1 },
+	{ "Iceweasel", NULL,      "About Iceweasel", 0,     True,        -1 },
+	{ "Iceweasel", NULL,      "Iceweasel Preferences", 0, True,      -1 },
+	{ "Iceweasel", NULL,      "Library",  0,            True,        -1 },
+	{ "Vlc",      NULL,       NULL,       0,            True,        -1 },
 	{ NULL,       "iptux",    NULL,       0,            True,        -1 },
 };
 
