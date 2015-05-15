@@ -65,6 +65,12 @@ while true; do
 	sleep 1
 done &
 
+# wallpaper
+feh --bg-fill /usr/share/backgrounds/gnome/Stones.jpg
+
+# keynav
+killall keynav
+keynav &
 
 # start dwm
-dwm
+dwm > /tmp/dwm.log 2>&1
