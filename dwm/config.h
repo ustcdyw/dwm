@@ -30,7 +30,9 @@ static const Rule rules[] = {
 	{ "Iceweasel", NULL,      "About Iceweasel", 0,     True,        -1 },
 	{ "Iceweasel", NULL,      "Iceweasel Preferences", 0, True,      -1 },
 	{ "Iceweasel", NULL,      "Library",  0,            True,        -1 },
+	{ "Icedove",  NULL,       NULL,       0,            True,        -1 },
 	{ "Vlc",      NULL,       NULL,       0,            True,        -1 },
+	{ "mpv",      NULL,       NULL,       0,            True,        -1 },
 	{ NULL,       "iptux",    NULL,       0,            True,        -1 },
 };
 
