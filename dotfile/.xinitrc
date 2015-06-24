@@ -1,4 +1,5 @@
 # input method
+# export LANG="eo.UTF-8"
 export LC_CTYPE="zh_CN.UTF-8"
 export XMODIFIERS="@im=fcitx"
 export XIM=fcitx
@@ -72,10 +73,6 @@ feh --bg-fill /usr/share/backgrounds/gnome/Stones.jpg
 # keynav
 killall keynav
 keynav &
-
-# xmodmap
-xmodmap -e "remove mod1 = Alt_R"
-xmodmap -e "add mod4 = Alt_R"
 
 # start dwm
 dwm > /tmp/dwm.log 2>&1
