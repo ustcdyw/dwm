@@ -801,6 +801,7 @@ void
 drawbar(Monitor *m) {
 	int x;
 	unsigned int i, occ = 0, urg = 0;
+	const char **ctags;
 	XftColor *col;
 	Client *c;
 
@@ -811,10 +812,17 @@ drawbar(Monitor *m) {
 			urg |= c->tags;
 	}
 	dc.x = 0;
+
+	if(m->num < LENGTH(xtags) &&
+	   LENGTH(tags) == LENGTH(xtags[m->num]))
+		ctags = xtags[m->num];
+	else
+		ctags = tags;
+
 	for(i = 0; i < LENGTH(tags); i++) {
-		dc.w = TEXTW(tags[i]);
+		dc.w = TEXTW(ctags[i]);
 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
-		drawtext(tags[i], col, urg & 1 << i);
+		drawtext(ctags[i], col, urg & 1 << i);
 		drawsquare(m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
 		           occ & 1 << i, urg & 1 << i, col);
 		dc.x += dc.w;
