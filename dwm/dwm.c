@@ -285,6 +285,7 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+static void dycycle(const Arg *arg);
 
 /* variables */
 static Systray *systray = NULL;
@@ -1140,7 +1141,19 @@ grabkeys(void) {
 
 void
 incnmaster(const Arg *arg) {
+	unsigned int n = 0;
+	Client *c;
+
+	for(c = selmon->clients; c; c = c->next)
+		if(ISVISIBLE(c))
+			n++;
+	if (n == 0)
+		return;
 	selmon->nmaster = MAX(selmon->nmaster + arg->i, 0);
+#if 0
+	if (selmon->nmaster > n)
+		selmon->nmaster = n;
+#endif
 	arrange(selmon);
 }
 
@@ -1586,6 +1599,7 @@ run(void) {
 	while(running && !XNextEvent(dpy, &ev))
 		if(handler[ev.type])
 			handler[ev.type](&ev); /* call handler */
+	system("killall dwmdate");
 }
 
 void
@@ -1856,8 +1870,7 @@ int
 textnw(const char *text, unsigned int len) {
 	XGlyphInfo ext;
 	XftTextExtentsUtf8(dpy, dc.font.xfont, (XftChar8 *) text, len, &ext);
-	return ext.xOff;
-}
+	return ext.xOff; }
 
 void
 tile(Monitor *m) {
@@ -1872,6 +1885,9 @@ tile(Monitor *m) {
 		mw = m->nmaster ? m->ww * m->mfact : 0;
 	else
 		mw = m->ww;
+	int _m = MAX((int)(n-m->nmaster), 0);
+	//snprintf(m->ltsymbol, sizeof m->ltsymbol, "%d-%d", MIN(m->nmaster,n), MAX(n - m->nmaster, 0));
+	snprintf(m->ltsymbol, sizeof m->ltsymbol, "%d-%d", MIN(m->nmaster,n), _m);
 	for(i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 		if(i < m->nmaster) {
 			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
@@ -2401,6 +2417,17 @@ xerrorstart(Display *dpy, XErrorEvent *ee) {
 }
 
 void
+dycycle(const Arg *arg) {
+	selmon->tagset[selmon->seltags] <<= 1;
+	selmon->tagset[selmon->seltags] &= TAGMASK;
+	if (selmon->tagset[selmon->seltags] == 0)
+		selmon->tagset[selmon->seltags] = 1;
+	focus(NULL);
+	arrange(selmon);
+}
+
+
+void
 zoom(const Arg *arg) {
 	Client *c = selmon->sel;
 
@@ -2439,6 +2466,7 @@ main(int argc, char *argv[]) {
 
 
 	scan();
+	system("dwminit");
 	run();
 	cleanup();
 	XCloseDisplay(dpy);

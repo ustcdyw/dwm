@@ -2021,6 +2021,14 @@ view(const Arg *arg) {
 	arrange(selmon);
 }
 
+void
+dycycle(const Arg *arg) {
+	selmon->tagset[selmon->seltags] >>= 1;
+	selmon->tagset[selmon->seltags] &= TAGMASK;
+	if (selmon->tagset[selmon->seltags] == 0)
+		selmon->tagset[selmon->seltags] = 1;
+}
+
 Client *
 wintoclient(Window w) {
 	Client *c;
