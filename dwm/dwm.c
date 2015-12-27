@@ -1778,7 +1778,7 @@ setlayout(const Arg *arg) {
 	}
 	if(arg && arg->v)
 		t->lt = (Layout *)arg->v;
-	strncpy(t->ltsymbol, t->lt, sizeof t->ltsymbol);
+	strncpy(t->ltsymbol, t->lt->symbol, sizeof t->ltsymbol);
 	if(selmon->sel)
 		arrange(selmon);
 	else
@@ -1867,12 +1867,13 @@ setup(void) {
 
 void
 showhide(Client *c) {
+	Tag *t;
 	if(!c)
 		return;
 	if(ISVISIBLE(c)) { /* show clients top down */
-		Tag *t = m2t(c->mon);
 		XMoveWindow(dpy, c->win, c->x, c->y);
 		//if((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+		t = m2t(c->mon);
 		if((!t->lt->arrange || c->isfloating) && !c->isfullscreen)
 			resize(c, c->x, c->y, c->w, c->h, False);
 		showhide(c->snext);
