@@ -28,12 +28,17 @@ static const char *xtags[][10] = {
 	{ "夜", "来", "风", "雨", "声", "花", "落", "知", "多", "少" },
 };
 */
+/*
 static const char *xtags[][10] = {
-	{ "日", "暮", "长", "江", "里", "相", "邀", "归", "渡", "头", },
-	{ "落", "花", "如", "有", "意", "来", "去", "逐", "船", "流", },
+	{ "日", "暮", "长", "江", "里", "相", "邀", "归", "渡", "", },
+	{ "落", "花", "如", "有", "意", "来", "去", "逐", "船", "", },
 };
-
-static const char *tags[] = { "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸" };
+*/
+static const char *xtags[][11] = {
+	{ "明", "月", "出", "天", "山", "苍", "茫", "云", "海", "间", "",},
+	{ "长", "风", "几", "万", "里", "吹", "渡", "玉", "门", "关", "",},
+};
+static const char *tags[] = { "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "" };
 //static const char *tags[] = { "夜", "来", "风", "雨", "声", "花", "落", "知", "多", "少" };
 //static const char *tags[] = { "日", "暮", "长", "江", "里", "相", "邀", "归", "渡", "头" };
 
@@ -122,10 +127,13 @@ static Key keys[] = {
 	TAGKEYS(                     XK_8,                         7)
 	TAGKEYS(                     XK_9,                         8)
 	TAGKEYS(                     XK_0,                         9)
+	TAGKEYS(                     XK_minus,                     10)
+//	TAGKEYS(                     XK_equal,                     11)
+
 	{ MODKEY|ShiftMask,          XK_q,         quit,           {0} },
-	{ MODKEY,                    XK_minus,     spawn,          {.v = volumedown } },
-	{ MODKEY,                    XK_equal,     spawn,          {.v = volumeup } },
-	{ MODKEY,                    XK_BackSpace, spawn,          {.v = mute} },
+	{ MODKEY,                    XK_bracketleft, spawn,        {.v = volumedown } },
+	{ MODKEY,                    XK_bracketright, spawn,       {.v = volumeup } },
+	{ MODKEY,                    XK_backslash, spawn,          {.v = mute} },
 };
 
 /* button definitions */

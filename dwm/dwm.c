@@ -56,7 +56,7 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height)
-#define TAGNUM                  (10)
+#define TAGNUM                  (20)
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 #define _NET_SYSTEM_TRAY_ORIENTATION_HORZ 0
@@ -852,7 +852,8 @@ drawbar(Monitor *m) {
 	else
 		ctags = tags;
 
-	for(i = 0; i < LENGTH(tags); i++) {
+	// Do not draw the last one tag.
+	for(i = 0; i < LENGTH(tags) - 1; i++) {
 		dc.w = TEXTW(ctags[i]);
 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
 		drawtext(ctags[i], col, urg & 1 << i);
@@ -1585,6 +1586,7 @@ resizemouse(const Arg *arg) {
 					togglefloating(NULL);
 			}
 			//if(!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+			t = m2t(selmon);
 			if(!t->lt->arrange || c->isfloating)
 				resize(c, c->x, c->y, nw, nh, True);
 			break;
