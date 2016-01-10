@@ -2480,10 +2480,30 @@ xerrorstart(Display *dpy, XErrorEvent *ee) {
 
 void
 dycycle(const Arg *arg) {
-	selmon->tagset[selmon->seltags] <<= 1;
-	selmon->tagset[selmon->seltags] &= TAGMASK;
-	if (selmon->tagset[selmon->seltags] == 0)
-		selmon->tagset[selmon->seltags] = 1;
+	Client *c;
+	unsigned int n, t;
+	t = 0;
+	for (;;) {
+		// Only cycle in the tags having clients visiable.
+		selmon->tagset[selmon->seltags] <<= 1;
+		selmon->tagset[selmon->seltags] &= TAGMASK;
+		if (selmon->tagset[selmon->seltags] == 0)
+			selmon->tagset[selmon->seltags] = 1;
+		n = 0;
+		for(c = selmon->clients; c; c = c->next)
+			if(ISVISIBLE(c)) {
+				n = 1;
+				break;
+			}
+		if (n > 0) {
+			break;
+		} else {
+			t++;
+			// If there are no clients, cycle to next tag.
+			if (t == LENGTH(tags) + 1)
+				break;
+		}
+	}
 	focus(NULL);
 	arrange(selmon);
 }

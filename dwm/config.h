@@ -5,7 +5,7 @@ static const char font[]            = "WenQuanYi Micro Hei Mono";
 static const char normbordercolor[] = "#444444";
 static const char normbgcolor[]     = "#222222";
 static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#005577";
+static const char selbordercolor[]  = "#FF8800";
 static const char selbgcolor[]      = "#005577";
 static const char selfgcolor[]      = "#eeeeee";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -62,7 +62,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
-static const float mfact      = 0.60; /* factor of master area size [0.05..0.95] */
+static const float mfact      = 0.50; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const Bool resizehints = False; /*True;*/ /* True means respect size hints in tiled resizals */
 
@@ -130,7 +130,7 @@ static Key keys[] = {
 	TAGKEYS(                     XK_minus,                     10)
 //	TAGKEYS(                     XK_equal,                     11)
 
-	{ MODKEY|ShiftMask,          XK_q,         quit,           {0} },
+	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {0} },
 	{ MODKEY,                    XK_bracketleft, spawn,        {.v = volumedown } },
 	{ MODKEY,                    XK_bracketright, spawn,       {.v = volumeup } },
 	{ MODKEY,                    XK_backslash, spawn,          {.v = mute} },
