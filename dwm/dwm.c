@@ -220,6 +220,7 @@ static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static void focusstackabs(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
 static XftColor getcolor(const char *colstr);
 static Bool getrootptr(int *x, int *y);
@@ -832,6 +833,7 @@ dirtomon(int dir) {
 void
 drawbar(Monitor *m) {
 	int x;
+	int cn = 0;
 	unsigned int i, occ = 0, urg = 0;
 	const char **ctags;
 	XftColor *col;
@@ -852,7 +854,7 @@ drawbar(Monitor *m) {
 	else
 		ctags = tags;
 
-	// Do not draw the last one tag.
+	// Do not draw the last tag.
 	for(i = 0; i < LENGTH(tags) - 1; i++) {
 		dc.w = TEXTW(ctags[i]);
 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
@@ -862,6 +864,19 @@ drawbar(Monitor *m) {
 		dc.x += dc.w;
 	}
 	t = m2t(m);
+	if (t->lt - layouts == 2) {
+		for (c = selmon->clients; c; c = c->next) {
+			if (ISVISIBLE(c)) {
+				cn++;
+				if (c == m->sel) {
+					i = cn;
+				}
+			}
+		}
+		if (cn == 0)
+			i = 0;
+		snprintf(t->ltsymbol, sizeof t->ltsymbol, "%d:%d", i, cn);
+	}
 	dc.w = blw = TEXTW(t->ltsymbol);
 	drawtext(t->ltsymbol, dc.norm, False);
 	dc.x += dc.w;
@@ -882,7 +897,30 @@ drawbar(Monitor *m) {
 		dc.x = m->ww;
 	if((dc.w = dc.x - x) > bh) {
 		dc.x = x;
-		if(m->sel) {
+		if ((t->lt - layouts == 2) && m->sel) {
+			char pname[256+8];
+			dc.w /= (cn > 5 ? 5 : cn);
+			i = 0;
+			for (c = selmon->clients; c; c = c->next) {
+				if (!ISVISIBLE(c))
+					continue;
+				col = c == m->sel ? dc.sel : dc.norm;
+				i++;
+				if (i > 5)
+					break;
+				switch (i) {
+					case 1: sprintf(pname, "A: %s", c->name); break;
+					case 2: sprintf(pname, "S: %s", c->name); break;
+					case 3: sprintf(pname, "D: %s", c->name); break;
+					case 4: sprintf(pname, "F: %s", c->name); break;
+					case 5: sprintf(pname, "G: %s", c->name); break;
+					default: break;
+				}
+				drawtext(pname, col, False);
+				drawsquare(c->isfixed, c->isfloating, False, col);
+				dc.x += dc.w;
+			}
+		} else if(m->sel) {
 			col = m == selmon ? dc.sel : dc.norm;
 			drawtext(m->sel->name, col, False);
 			drawsquare(m->sel->isfixed, m->sel->isfloating, False, col);
@@ -1014,6 +1052,25 @@ focusmon(const Arg *arg) {
 	unfocus(selmon->sel, True);
 	selmon = m;
 	focus(NULL);
+}
+
+void
+focusstackabs(const Arg *arg) {
+	Client *c = NULL;
+	int j = 0;
+
+	if(!selmon->sel)
+		return;
+	for (c = selmon->clients; c; c = c->next) {
+		if (!ISVISIBLE(c))
+			continue;
+		j++;
+		if (arg->i == j) {
+			focus(c);
+			restack(selmon);
+			break;
+		}
+	}
 }
 
 void
@@ -1650,7 +1707,6 @@ run(void) {
 	while(running && !XNextEvent(dpy, &ev))
 		if(handler[ev.type])
 			handler[ev.type](&ev); /* call handler */
-	system("killall dwmdate");
 }
 
 void
@@ -2550,7 +2606,6 @@ main(int argc, char *argv[]) {
 
 
 	scan();
-	system("dwminit");
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
