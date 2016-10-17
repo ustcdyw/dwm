@@ -83,8 +83,10 @@ enum { NetSupported, NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation,
 	   NetWMWindowTypeDialog, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
-enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
-       ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
+//enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+enum { ClkTagBar, ClkLtSymbol, ClkWinTitle,
+//       ClkWinTitleA, ClkWinTitleS, ClkWinTitleD, ClkWinTitleF, ClkWinTitleG,
+       ClkStatusText, ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
 
 typedef union {
 	int i;
@@ -295,7 +297,9 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+
 static void dycycle(const Arg *arg);
+static void peertag(const Arg *arg);
 static Tag *m2t(Monitor *m);
 
 /* variables */
@@ -493,6 +497,7 @@ buttonpress(XEvent *e) {
 	Arg arg = {0};
 	Client *c;
 	Monitor *m;
+	Tag *t;
 	XButtonPressedEvent *ev = &e->xbutton;
 
 	click = ClkRootWin;
@@ -506,8 +511,8 @@ buttonpress(XEvent *e) {
 		i = x = 0;
 		do
 			x += TEXTW(tags[i]);
-		while(ev->x >= x && ++i < LENGTH(tags));
-		if(i < LENGTH(tags)) {
+		while(ev->x >= x && ++i < LENGTH(tags) - 1);
+		if(i < LENGTH(tags) - 1) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		}
@@ -515,8 +520,43 @@ buttonpress(XEvent *e) {
 			click = ClkLtSymbol;
 		else if(ev->x > selmon->ww - TEXTW(stext))
 			click = ClkStatusText;
-		else
+		else {
 			click = ClkWinTitle;
+			t = m2t(m);
+			if (t->lt - layouts == 2 && ev->button == Button1) {
+				int cn = 0;
+				int w;
+				int len = selmon->ww - TEXTW(stext) - x - blw;
+				for (c = selmon->clients; c; c = c->next) {
+					if (ISVISIBLE(c)) {
+						cn++;
+						if (cn > 5) {
+							cn = 5;
+							break;
+						}
+					}
+				}
+				if (cn == 0)
+					return;
+				w = len/cn;
+				x += blw;
+				i = 0;
+				do
+					x += w;
+				while (ev->x >= x && ++i < cn);
+				cn = 0;
+				for (c = selmon->clients; c; c = c->next) {
+					if (ISVISIBLE(c)) {
+						if (cn++ == i) {
+							focus(c);
+							restack(selmon);
+							break;
+						}
+					}
+				}
+				return;
+			}
+		}
 	}
 	else if((c = wintoclient(ev->window))) {
 		focus(c);
@@ -1830,12 +1870,20 @@ setfullscreen(Client *c, Bool fullscreen) {
 void
 setlayout(const Arg *arg) {
 	Tag *t = m2t(selmon);
-	if(!arg || !arg->v || arg->v != t->lt) {
-		t->lt = layouts + (t->lt - layouts + 1)%LENGTH(layouts);
+	if (!arg)
+		return;
+	if (arg->i) {
+		t->lt = layouts + (arg->i % 2);
+	} else {
+		/* Don't use NULL layout */
+		t->lt = layouts + (((t->lt - layouts) ^ 2) & 2);
+		// t->lt = layouts + (t->lt - layouts + 1)%LENGTH(layouts);
 		/*selmon->sellt ^= 1;*/
 	}
+	/*
 	if(arg && arg->v)
 		t->lt = (Layout *)arg->v;
+	*/
 	strncpy(t->ltsymbol, t->lt->symbol, sizeof t->ltsymbol);
 	if(selmon->sel)
 		arrange(selmon);
@@ -2535,16 +2583,42 @@ xerrorstart(Display *dpy, XErrorEvent *ee) {
 }
 
 void
+peertag(const Arg *arg) {
+	unsigned int seltag;
+	int i;
+	seltag = selmon->tagset[selmon->seltags];
+	for (i = 0; seltag != 0; i++) {
+		seltag >>= 1;
+	}
+	i--;
+	seltag = (1 << (i^1)) & TAGMASK;
+	if (seltag == 0) {
+		return;
+	}
+	selmon->tagset[selmon->seltags] = seltag;
+	focus(NULL);
+	arrange(selmon);
+}
+
+void
 dycycle(const Arg *arg) {
 	Client *c;
 	unsigned int n, t;
 	t = 0;
+	// direction
+	int dir = 0;
+	if (arg->i >= 0)
+		dir = 1;
 	for (;;) {
 		// Only cycle in the tags having clients visiable.
-		selmon->tagset[selmon->seltags] <<= 1;
-		selmon->tagset[selmon->seltags] &= TAGMASK;
-		if (selmon->tagset[selmon->seltags] == 0)
-			selmon->tagset[selmon->seltags] = 1;
+		if (dir == 1) {
+			selmon->tagset[selmon->seltags] <<= 1;
+		}
+		else
+			selmon->tagset[selmon->seltags] >>= 1;
+			selmon->tagset[selmon->seltags] &= TAGMASK;
+			if (selmon->tagset[selmon->seltags] == 0)
+				selmon->tagset[selmon->seltags] = dir == 1 ? 1 : (1 << (LENGTH(tags)-1));
 		n = 0;
 		for(c = selmon->clients; c; c = c->next)
 			if(ISVISIBLE(c)) {
